@@ -29,7 +29,10 @@ export const prepare = () => (dispatch, getState) => {
   }
 
   if (config.elitismMode) {
-    options['elitism_mode'] = config.elitismMode;
+    options['elitism_mode'] = {
+      top: 10,
+      every: config.elitismMode
+    };
   }
 
   socket.sendCommand('prepare', options);
