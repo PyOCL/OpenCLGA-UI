@@ -31,6 +31,9 @@ class ControlPanel extends Component {
             <Button disabled={!control.buttons.stop} onClick={actions.stop}>
               Stop
             </Button>
+            <Button disabled={!control.buttons.best} onClick={actions.getBest}>
+              Get Best
+            </Button>
           </div>
         </Row>
       </Panel>

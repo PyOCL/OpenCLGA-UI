@@ -53,3 +53,7 @@ export const pause = () => (dispatch, getState) => {
 export const stop = () => (dispatch, getState) => {
   socket.sendCommand('stop');
 };
+
+export const getBest = () => (dispatch, getState) => {
+  socket.sendCommand('get_best');
+}

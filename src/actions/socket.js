@@ -114,6 +114,9 @@ class Socket {
       case WEBSOCKET_MESSAGE_TYPE.GENERATION_RESULT:
         actionType = ACTION_KEYS.GENERATION_RESULT;
         break;
+      case WEBSOCKET_MESSAGE_TYPE.BEST_RESULT:
+        actionType = ACTION_KEYS.BEST_RESULT;
+        break;
       default:
         console.error('Unknown ws message!!', data.type);
     }

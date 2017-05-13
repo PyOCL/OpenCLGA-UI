@@ -68,7 +68,8 @@ class Main extends Component {
       control,
       actions,
       aggregrated,
-      workers
+      workers,
+      bestResult
     } = this.props;
 
     const clsNames = classNameMap[this.state.state];
@@ -81,7 +82,7 @@ class Main extends Component {
           <ConfigPanel config={config} state={control.currentState}
                        actions={actions.configActions} />
           <ControlPanel control={control} actions={actions.controlActions} />
-          <WidgetsPanel aggregrated={aggregrated} workers={workers} />
+          <WidgetsPanel aggregrated={aggregrated} workers={workers} bestResult={bestResult} />
           { DEFAULT_WEBSOCKET_SERVER === 'dialog' && this.state.state === 'waiting' &&
             <WebSocketURLDialog onClose={this.handleURLDialogClose} />
           }
@@ -96,7 +97,8 @@ const mapStateToProps = (state) => {
     config: state.config,
     control: state.control,
     aggregrated: state.socket.aggregrated,
-    workers: state.socket.workers
+    workers: state.socket.workers,
+    bestResult: state.socket.bestResult
   };
 };
 

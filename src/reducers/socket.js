@@ -102,6 +102,17 @@ const handleGenerationResult = (workers, data) => {
   }
 };
 
+const handleBestResult = (workers, data, bestResult) => {
+  const worker = workers[data.worker];
+  if (!worker) {
+    console.error('unknown worker id found', data.worker);
+    return bestResult;
+  }
+  worker.bestResult = JSON.parse(data.result);
+  const minFitness = _.min(_.map(workers, (item) => (item.best))) || 0;
+  return (worker.best === minFitness) ? worker.bestResult : bestResult;
+}
+
 export default (state = initialState, payload) => {
   const data = payload.data;
   const workers = { ...state.workers };
@@ -119,7 +130,10 @@ export default (state = initialState, payload) => {
       const aggregrated = [ ...state.aggregrated ];
       handleGenerationResult(workers, data);
       aggregrateGlobalResult(aggregrated, data);
-      return { aggregrated, workers };
+      return { ...state, aggregrated, workers };
+    case ACTION_KEYS.BEST_RESULT:
+      const bestResult = handleBestResult(workers, data, state.bestResult);
+      return { ...state, workers, bestResult }
     default:
       return state;
   }

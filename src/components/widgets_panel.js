@@ -14,10 +14,11 @@ class WidgetsPanel extends Component {
   render() {
     const {
       aggregrated,
-      workers
+      workers,
+      bestResult
     } = this.props;
 
-    const bestResult = _.min(_.map(workers, (item) => (item.best))) || 0;
+    const bestFitness = _.min(_.map(workers, (item) => (item.best))) || 0;
     let sortedWorkerArray = _.sortBy(_.values(workers), 'id');
     sortedWorkerArray = sortedWorkerArray.map((item) => {
       item.generationCount = item.shiftedStatistics + item.statistics.length;
@@ -30,7 +31,7 @@ class WidgetsPanel extends Component {
             <ConnectedWorkers count={_.size(workers)} />
           </Col>
           <Col xs={12} sm={12} md={6}>
-            <BestFitness value={bestResult} />
+            <BestFitness value={bestFitness} />
           </Col>
         </Row>
         <Row className='widgets-panel-row'>
@@ -46,11 +47,11 @@ class WidgetsPanel extends Component {
             <ResultLineChart aggregrated={aggregrated} />
           </Col>
         </Row>
-        <Row className='widgets-panel-row'>
+        { bestResult && <Row className='widgets-panel-row'>
           <Col xs={12} sm={12} md={12}>
-            <Taiwan />
+            <Taiwan best={bestResult}/>
           </Col>
-        </Row>
+        </Row> }
       </div>
     );
   }

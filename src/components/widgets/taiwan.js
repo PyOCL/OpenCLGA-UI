@@ -13,7 +13,7 @@ class Taiwan extends PureComponent {
 
   static propTypes = {
     className: PropTypes.string,
-    result: PropTypes.array
+    best: PropTypes.array.isRequired
   };
 
   constructor(props) {
@@ -25,19 +25,52 @@ class Taiwan extends PureComponent {
     this.drawMap();
   }
 
+  prepareArcs() {
+    return _.map(this.props.best, (item, index) => {
+        const ret = {
+          origin: {
+            latitude: item.y,
+            longitude: item.x
+          }
+        };
+
+        const destItem = (index < this.props.best.length - 1) ? this.props.best[index + 1]
+                                                              : this.props.best[0];
+
+        ret.destination = {
+          latitude: destItem.y,
+          longitude: destItem.x
+        };
+
+        return ret;
+    });
+  }
+
+  prepareTowns() {
+    return _.map(this.props.best, (item) => {
+      return {
+        name: item.name,
+        fillKey: 'town',
+        latitude: item.y,
+        longitude: item.x,
+        radius: 1
+      };
+    });
+  }
+
   drawMap() {
     if (!this.container) {
       setTimeout(this.drawMap, 33);
       return;
     }
+    console.log('loading');
     window.mapJSON = mapJSON;
     mapJSON.objects[MAP_ID].geometries.forEach((d) => {
       d.id = d.properties[OBJECT_ID_KEY];
     });
-    console.log('loading');
+
     const start = new Date().getTime();
     const scope = { rotation: [121, 23.67] };
-
     const map = new Datamap({
       element: this.container,
       geographyConfig: {
@@ -49,7 +82,18 @@ class Taiwan extends PureComponent {
         highlightOnHover: false,
         popupOnHover: false
       },
+      bubblesConfig: {
+        borderWidth: 1,
+        highlightBorderWidth: 1,
+        exitDelay: 10
+      },
+      arcConfig: {
+        stokeWidth: 1,
+        arcSharpness: 0.01,
+        animationSpeed: 0
+      },
       fills: {
+        town: '#1f77b4',
         defaultFill: '#EDDC4E'
       },
       scope: MAP_ID,
@@ -72,6 +116,9 @@ class Taiwan extends PureComponent {
         console.log('elapsed: ', (new Date().getTime() - start));
       }
     });
+
+    map.arc(this.prepareArcs());
+    map.bubbles(this.prepareTowns());
 
     this.map = map;
   }
