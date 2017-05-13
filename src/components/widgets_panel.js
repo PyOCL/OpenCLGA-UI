@@ -7,6 +7,7 @@ import BestFitness from './widgets/best_fitness';
 import WorkersTable from './widgets/workers_table';
 import WorkerLineChart from './widgets/worker_line_chart';
 import ResultLineChart from './widgets/result_line_chart';
+import Taiwan from './widgets/taiwan';
 
 class WidgetsPanel extends Component {
 
@@ -43,6 +44,11 @@ class WidgetsPanel extends Component {
           </Col>
           <Col xs={12} sm={12} md={6}>
             <ResultLineChart aggregrated={aggregrated} />
+          </Col>
+        </Row>
+        <Row className='widgets-panel-row'>
+          <Col xs={12} sm={12} md={12}>
+            <Taiwan />
           </Col>
         </Row>
       </div>

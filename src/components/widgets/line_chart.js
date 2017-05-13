@@ -17,7 +17,7 @@ const FitnessLineChart = (props) => {
                  margin={{top: 10, right: 0, left: 0, bottom: 0}}>
         <XAxis dataKey='index'/>
         <YAxis/>
-        <CartesianGrid strokeDasharray="3 3"/>
+        <CartesianGrid strokeDasharray='3 3'/>
         <Tooltip/>
         <Line dataKey='best_fitness'
               dot={false}
