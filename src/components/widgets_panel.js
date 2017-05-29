@@ -19,7 +19,7 @@ class WidgetsPanel extends Component {
     const bestResult = _.min(_.map(workers, (item) => (item.best))) || 0;
     let sortedWorkerArray = _.sortBy(_.values(workers), 'id');
     sortedWorkerArray = sortedWorkerArray.map((item) => {
-      item.generationCount = item.statistics.length;
+      item.generationCount = item.shiftedStatistics + item.statistics.length;
       return item;
     });
     return (
