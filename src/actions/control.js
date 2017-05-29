@@ -30,7 +30,7 @@ export const prepare = () => (dispatch, getState) => {
 
   if (config.elitismMode) {
     options['elitism_mode'] = {
-      top: 10,
+      top: 1,
       every: config.elitismMode
     };
   }
