@@ -124,3 +124,5 @@ export const STATE_HANDLERS = {
 };
 
 export const AGGREGRATION_SECONDS = 5;
+
+export const MAX_RESULT_RECORDS = 500;

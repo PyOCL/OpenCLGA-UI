@@ -59,7 +59,7 @@ class WorkerLineChart extends Component {
     const activeWorker = this.props.workers[this.state.selected];
     const activeWorkerResult = activeWorker ? _.map(activeWorker.statistics, (item, index) => ({
       ...item,
-      index: index + 1
+      index: activeWorker.shiftedStatistics + index + 1
     })) : [];
     return (
       <Well>

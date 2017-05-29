@@ -2,16 +2,19 @@ import _ from 'lodash';
 import {
   AGGREGRATION_SECONDS,
   DEVICE_TYPE,
+  MAX_RESULT_RECORDS,
   OPENCLGA_STATES
 } from '../shared/constants';
 import { ACTION_KEYS } from '../shared/socket';
 
 export const initialState = {
-  aggregrated: {},
-  workers: {}
+  aggregrated: [],
+  workers: {},
+  bestResult: null
 };
 
 const AGGREGRATION_TEMPLATE = {
+  groupKey: null,
   avg_fitness: 0,
   best_fitness: 0,
   count: 0,
@@ -25,6 +28,7 @@ const WORKER_TEMPLATE = {
   'platform': '',
   'state': OPENCLGA_STATES.DEFAULT,
   'statistics': [],
+  'shiftedStatistics': 0,
   'type': DEVICE_TYPE.CPU,
 };
 
@@ -60,12 +64,20 @@ const aggregrateGlobalResult = (aggregrated, data) => {
   time.setSeconds(((time.getSeconds() / AGGREGRATION_SECONDS) >> 0) * AGGREGRATION_SECONDS);
   time.setMilliseconds(0);
   const groupKey = time.getTime();
-  const group = aggregrated[groupKey] || _.cloneDeep(AGGREGRATION_TEMPLATE);
+  const lastGroup = aggregrated[aggregrated.length - 1];
+  let group;
+  if (lastGroup && lastGroup.groupKey === groupKey) {
+    group = lastGroup;
+  } else {
+    group = _.cloneDeep(AGGREGRATION_TEMPLATE);
+    aggregrated.push(group);
+    while (aggregrated.length > MAX_RESULT_RECORDS && aggregrated.shift());
+  }
+  group.groupKey = groupKey;
   group.count++;
   group.best_fitness += (result.best_fitness - group.best_fitness) / group.count;
   group.avg_fitness += (result.avg_fitness - group.avg_fitness) / group.count;
   group.worst_fitness += (result.worst_fitness - group.worst_fitness) / group.count;
-  aggregrated[groupKey] = group;
 };
 
 const handleGenerationResult = (workers, data) => {
@@ -74,7 +86,14 @@ const handleGenerationResult = (workers, data) => {
     console.error('unknown worker id found', data.worker);
     return;
   }
+  // put data in array
   worker.statistics.push(data.result);
+  while (worker.statistics.length > MAX_RESULT_RECORDS) {
+    if (!worker.statistics.shift()) {
+      break;
+    }
+    worker.shiftedStatistics++;
+  }
   if (worker.best) {
     // TODO: we should read opt_for_max from server.
     worker.best = Math.min(worker.best, data.result.best_fitness);
@@ -97,7 +116,7 @@ export default (state = initialState, payload) => {
       handleStateChanged(workers, data);
       return { ...state, workers };
     case ACTION_KEYS.GENERATION_RESULT:
-      const aggregrated = { ...state.aggregrated };
+      const aggregrated = [ ...state.aggregrated ];
       handleGenerationResult(workers, data);
       aggregrateGlobalResult(aggregrated, data);
       return { aggregrated, workers };
